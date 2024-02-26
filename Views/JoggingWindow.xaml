@@ -1,0 +1,68 @@
+﻿<Window x:Class="CkasTool_MVVM.Views.JoggingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CkasTool_MVVM.Views" 
+        mc:Ignorable="d"
+        DataContext="{StaticResource JoggingVM}"
+        
+        Title="JoggingWindow" Height="450" Width="550">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.5*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <Label DockPanel.Dock="Top" Content="X" HorizontalAlignment="Center"/>
+            <TextBox DockPanel.Dock="Bottom" Width="30" Margin="0,0,0,10"
+                     Text="{Binding XValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Slider Name="XSlider"  Orientation="Vertical"  HorizontalAlignment="Center" TickFrequency="5" Minimum="-30" Maximum="30" TickPlacement="BottomRight" Margin="0,0,0,15"
+                    Value="{Binding XValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <DockPanel Grid.Column="1">
+            <Label DockPanel.Dock="Top" Content="Y" HorizontalAlignment="Center"/>
+            <TextBox DockPanel.Dock="Bottom" Width="30" Margin="0,0,0,10"
+                     Text="{Binding YValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Slider Name="YSlider" Orientation="Vertical"  Minimum="-30" Maximum="30" HorizontalAlignment="Center" TickFrequency="5" TickPlacement="BottomRight" Margin="0,0,0,15" 
+                    Value="{Binding YValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <DockPanel Grid.Column="2">
+            <Label DockPanel.Dock="Top" Content="Z" HorizontalAlignment="Center"/>
+            <TextBox DockPanel.Dock="Bottom" Width="30" Margin="0,0,0,10"
+                     Text="{Binding ZValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Slider Name="ZSlider" Orientation="Vertical"  Minimum="-30" Maximum="30" HorizontalAlignment="Center" TickFrequency="5" TickPlacement="BottomRight" Margin="0,0,0,15"
+                    Value="{Binding ZValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <DockPanel Grid.Row="1">
+            <Label DockPanel.Dock="Top" Content="Roll" HorizontalAlignment="Center"/>
+            <TextBox DockPanel.Dock="Bottom" Width="30" Margin="0,0,0,10"
+                     Text="{Binding RollValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Slider Name="RollSlider" Orientation="Vertical" Maximum="30" HorizontalAlignment="Center" TickFrequency="5" TickPlacement="BottomRight" Margin="0,0,0,15"
+                    Value="{Binding RollValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <DockPanel Grid.Column="1" Grid.Row="1">
+            <Label DockPanel.Dock="Top" Content="Pitch" HorizontalAlignment="Center"/>
+            <TextBox DockPanel.Dock="Bottom" Width="30" Margin="0,0,0,10"
+                     Text="{Binding PitchValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Slider Name="PitchSlider" Orientation="Vertical" Maximum="30" HorizontalAlignment="Center" TickFrequency="5" TickPlacement="BottomRight" Margin="0,0,0,15"
+                    Value="{Binding PitchValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <DockPanel Grid.Column="2" Grid.Row="1">
+            <Label DockPanel.Dock="Top" Content="Yaw" HorizontalAlignment="Center"/>
+            <TextBox DockPanel.Dock="Bottom" Width="30" Margin="0,0,0,10"
+                     Text="{Binding YawValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Slider Name="YawSlider" Orientation="Vertical" Maximum="30" HorizontalAlignment="Center" TickFrequency="5" TickPlacement="BottomRight" Margin="0,0,0,15"
+                    Value="{Binding YawValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <Button Content="Send Data" Grid.Column="3" 
+                VerticalAlignment="Bottom" Height="30"
+                Command="{Binding SendDataToCkasCommand}" Margin="0,0,10,0"/>
+    </Grid>
+</Window>

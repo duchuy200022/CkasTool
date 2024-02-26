@@ -7,6 +7,9 @@
         <ResourceDictionary xmlns:viewmodel="clr-namespace:CkasTool_MVVM.ViewModels">
             <viewmodel:MainViewModel x:Key="MainVN" />
             <viewmodel:ErrorViewModel x:Key="ErrorVM" />
+            <viewmodel:JoggingViewModel x:Key="JoggingVM" />
+            <viewmodel:RecordViewModel x:Key="RecordVM" />
+            <viewmodel:ReplayViewModel x:Key="ReplayVM" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
