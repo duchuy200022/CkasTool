@@ -30,7 +30,9 @@
 
             <Label Content="CKAS COM PORT: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,0,10" Height="26" Width="107" />
             <Label Grid.Row="1" Content="Carla IP address: " VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,5,0" Height="26" Width="100" />
-            <ComboBox ItemsSource="{Binding PortCkasList}" SelectedItem="{Binding PortCkasSelected}" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="200" Margin="0,0,0,15" Height="22"/>
+            <ComboBox ItemsSource="{Binding PortCkasList}" 
+                      IsEnabled="{Binding IsPortCkasAvail}"
+                      SelectedItem="{Binding PortCkasSelected}" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="200" Margin="0,0,0,15" Height="22"/>
             <TextBox Text="{Binding CarlaIp}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Height="20" Margin="0,2,0,0"/>
             <Button Content="{Binding BtnCkasContent}" Command="{Binding ConnectCkasCommand}" 
                     Grid.Column="2" Grid.Row="0" 
@@ -44,14 +46,13 @@
                 Command="{Binding RefreshPortCommand}"/>
         </Grid>
         <WrapPanel Grid.Row="1" Orientation="Horizontal">
-            <Button IsEnabled="{Binding IsCkasConnect}" Command="{Binding JoggingWindowCommand}" Content="Jogging" Width="100" Height="30" Margin="50,0,0,0"/>
-            <Button Content="Motor Control" Width="100" Height="30" Margin="50,0,0,0"/>
+            <Button Command="{Binding JoggingWindowCommand}" Content="Jogging" Width="100" Height="30" Margin="50,0,0,0"/>
+            <Button Content="Motor Control" Width="100" Height="30" Margin="50,0,0,0" IsEnabled="False"/>
             <Button Content="{Binding BtnRealtimeContent}"
                     Command="{Binding RealtimeCommand}"
-                    IsEnabled="True"
                     Width="100" Height="30" Margin="50,0,0,0"/>
-            <Button IsEnabled="{Binding IsCarlaConnect}" Command="{Binding RecordWindowCommand}" Content="Record" Width="100" Height="30" Margin="50,0,0,0"/>
-            <Button IsEnabled="{Binding IsCkasConnect}" Command="{Binding ReplayWindowCommand}" Content="Replay" Width="100" Height="30" Margin="50,0,0,0"/>
+            <Button Command="{Binding RecordWindowCommand}" Content="Record" Width="100" Height="30" Margin="50,0,0,0"/>
+            <Button Command="{Binding ReplayWindowCommand}" Content="Replay" Width="100" Height="30" Margin="50,0,0,0"/>
         </WrapPanel>
     </Grid>
 </Window>

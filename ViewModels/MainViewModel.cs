@@ -37,6 +37,8 @@ namespace CkasTool_MVVM.ViewModels
         public List<string> PortCkasList { get { return _portCkasList; } set { _portCkasList = value; OnPropertyChanged(); } }
         private string _portCkasSelected;
         public string PortCkasSelected { get { return _portCkasSelected; } set { _portCkasSelected = value;  OnPropertyChanged(); } }
+        private bool _isPortCkasAvail;
+        public bool IsPortCkasAvail { get => _isPortCkasAvail; set { _isPortCkasAvail = value; OnPropertyChanged(); } }
         #endregion
 
         #region Property_Carla_Ip
@@ -62,8 +64,22 @@ namespace CkasTool_MVVM.ViewModels
         public bool IsCarlaConnect { get => _isCarlaConnect; set { _isCarlaConnect = value; OnPropertyChanged(); } }
         #endregion
 
+        private bool _isBtnRefreshAvail;
+        public bool isBtnRefreshAvail { get => _isBtnRefreshAvail; set { _isBtnRefreshAvail = value; OnPropertyChanged(); } }
+
+        private bool _isBtnRecordAvail;
+        public bool IsBtnRecordAvail { get => _isBtnRecordAvail; set { _isBtnRecordAvail = value; OnPropertyChanged(); } }
+
+        private bool _isBtnReplayAvail;
+        public bool IsBtnReplayAvail { get => _isBtnReplayAvail; set { _isBtnReplayAvail = value; OnPropertyChanged(); } }
+
+        private bool _isBtnJoggingAvail;
+        public bool IsBtnJoggingAvail { get => _isBtnJoggingAvail; set { _isBtnJoggingAvail = value; OnPropertyChanged(); } }
+
         private string _btnRealtimeContent;
         public string BtnRealtimeContent { get => _btnRealtimeContent; set { _btnRealtimeContent = value; OnPropertyChanged(); } }
+
+        public Task TaskRealTime { get; set; }
 
         public MainViewModel()
         {
@@ -75,19 +91,24 @@ namespace CkasTool_MVVM.ViewModels
             CarlaIp = "127.0.0.1:5000";
             IsBtnCkasAvail = true;
             IsBtnCarlaAvail=true;
+            IsPortCkasAvail = true;
+            isBtnRefreshAvail = true;
             BtnCkasContent = "Connect";
             BtnCarlaContent = "Connect";
             BtnRealtimeContent = "Start Realtime";
             IsCkasConnect = false;
             IsCarlaConnect = false;
+            IsBtnRecordAvail = false;
+            IsBtnJoggingAvail = false;
+            IsBtnReplayAvail = false;
 
             ConnectCkasCommand = new RelayCommand(data => ConnectCkasExecuted(data), data => { return IsBtnCkasAvail; });
             ConnectCarlaCommand = new RelayCommand(data => ConnectCarlaExecuted(data), data => { return IsBtnCarlaAvail; });
-            RefreshPortCommand = new RelayCommand(data => RefreshPortExcuted(data), data => true);
-            JoggingWindowCommand = new RelayCommand(data => JoggingWindowExcuted(data), data => { return IsCkasConnect; });
-            //RealtimeCommand = new RelayCommand(data => RealtimeExecuted(data), data => { return IsCkasConnect && IsCarlaConnect; });
-            RecordWindowCommand = new RelayCommand (data => RecordWindowExecuted(data), data => { return IsCarlaConnect; } );
-            ReplayWindowCommand = new RelayCommand(data => ReplayWindowExecuted(data), data => { return IsCkasConnect; } );
+            RefreshPortCommand = new RelayCommand(data => RefreshPortExcuted(data), data => isBtnRefreshAvail);
+            JoggingWindowCommand = new RelayCommand(data => JoggingWindowExcuted(data), data => { return IsBtnJoggingAvail; });
+            RealtimeCommand = new RelayCommand(data => RealtimeExecuted(data), data => { return IsCkasConnect && IsCarlaConnect; });
+            RecordWindowCommand = new RelayCommand (data => RecordWindowExecuted(data), data => { return IsBtnRecordAvail; } );
+            ReplayWindowCommand = new RelayCommand(data => ReplayWindowExecuted(data), data => { return IsBtnReplayAvail; } );
 
             Mediator.Mediator.Register(Event.TcpError, TcpErrorHandler);
         }
@@ -107,7 +128,9 @@ namespace CkasTool_MVVM.ViewModels
                     if (SerialConnection.Instance.IsOpen)
                     {
                         BtnCkasContent = "Disconnect";
-                        IsCkasConnect=true;
+                        IsCkasConnect = true;
+                        IsBtnReplayAvail = true;
+                        IsBtnJoggingAvail = true;
                     }
                     else
                     {
@@ -117,10 +140,13 @@ namespace CkasTool_MVVM.ViewModels
                 else
                 {
                     IsBtnCkasAvail = false;
+                    IsBtnReplayAvail = false;
+                    IsBtnJoggingAvail = false;
                     SerialConnection.Instance.Close();
                     BtnCkasContent = "Connect";
                     IsCkasConnect = false;
                 }
+                IsBtnCkasAvail = true;
             }
             catch (Exception ex) {
                 ErrorWindow errorWindow = new ErrorWindow();
@@ -128,7 +154,6 @@ namespace CkasTool_MVVM.ViewModels
                 errorVm.ErrorData = ex.Message;
                 errorWindow.ShowDialog();
             }
-            IsBtnCkasAvail = true;
         }
         private void ConnectCarlaExecuted(object data)
         {
@@ -147,6 +172,7 @@ namespace CkasTool_MVVM.ViewModels
                     {
                         BtnCarlaContent = "Disconnect";
                         IsCarlaConnect = true;
+                        IsBtnRecordAvail = true;
                     }
                     else
                     {
@@ -156,6 +182,7 @@ namespace CkasTool_MVVM.ViewModels
                 else
                 {
                     IsBtnCarlaAvail = false;
+                    IsBtnRecordAvail = false;
                     TcpConnection.Instance.Close();
                     TcpConnection.Instance.Dispose();
                     TcpConnection.Instance = null;
@@ -210,73 +237,83 @@ namespace CkasTool_MVVM.ViewModels
             }  
         }
 
-        //private async void RealtimeExecuted (object data)
-        //{
-        //    try
-        //    {
-        //        if(BtnRealtimeContent == "Start Realtime")
-        //        {
-        //            _ctsRealTime = new CancellationTokenSource();
-        //            BtnRealtimeContent = "Stop Realtime";
-        //            await Task.Run(async () =>
-        //            {
-        //                byte[] responseBytes = new byte[4096];
-        //                char[] responseChars = new char[4096];
-        //                while (true)
-        //                {
-        //                    //
-        //                    _ctsRealTime.Token.ThrowIfCancellationRequested();
-        //                    int bytesReceived = await TcpConnection.Instance.ReceiveAsync(responseBytes, SocketFlags.None, _ctsRealTime.Token);
-        //                    if (bytesReceived == 0)
-        //                    {
-        //                        throw new Exception("No data received");
-        //                    }
-        //                    //
-        //                    _ctsRealTime.Token.ThrowIfCancellationRequested();
-        //                    int charCount = Encoding.ASCII.GetChars(responseBytes, 0, bytesReceived, responseChars, 0);
-        //                    string dataReceived = new string(responseChars, 0, charCount);
-        //                    dataReceived = $"[{dataReceived}]";
-        //                    List<Carla> carlaTelemetry = JsonConvert.DeserializeObject<List<Carla>>(dataReceived);
-        //                    if (carlaTelemetry == null)
-        //                    {
-        //                        throw new Exception("Wrong data");
-        //                    }
-        //                    //
-        //                    _ctsRealTime.Token.ThrowIfCancellationRequested();
-        //                    foreach (Carla carla in carlaTelemetry)
-        //                    {
-        //                        string cmd = MCode.Move_Cartesian(MCode.modeMoveCartesian.STATIC, Int32.Parse(carla.position[0]),
-        //                            Int32.Parse(carla.position[1]), Int32.Parse(carla.position[2]),
-        //                            Int32.Parse(carla.orientation[0]), Int32.Parse(carla.orientation[1]), Int32.Parse(carla.orientation[2]));
-        //                        SerialConnection.Instance.WriteLine(cmd);
-        //                    }
-        //                }
+        private async void RealtimeExecuted(object data)
+        {
+            try
+            {
+                if(BtnRealtimeContent == "Start Realtime")
+                {
+                    BlockWindow();
+                    BtnRealtimeContent = "Stop Realtime";
+                    _ctsRealTime = new CancellationTokenSource();
+                    TaskRealTime = Task.Run(async () =>
+                    {
+                        byte[] responseBytes = new byte[4096];
+                        char[] responseChars = new char[4096];
 
-        //            }, _ctsRealTime.Token);
-                    
-        //        }
-        //        else
-        //        {
-        //            _ctsRealTime.Cancel();
-        //            BtnRealtimeContent = "Start Realtime";
-        //        }
-        //    }
-        //    catch(AggregateException agex)
-        //    {
-        //        ErrorWindow errorWindow = new ErrorWindow();
-        //        var errorVm = errorWindow.DataContext as ErrorViewModel;
-        //        errorVm.ErrorData = "Realtime has been stopped";
-        //        errorWindow.ShowDialog();
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        ResetWindow();
-        //        ErrorWindow errorWindow = new ErrorWindow();
-        //        var errorVm = errorWindow.DataContext as ErrorViewModel;
-        //        errorVm.ErrorData = ex.Message;
-        //        errorWindow.ShowDialog();
-        //    }
-        //}
+                        while (true)
+                        {
+                            int bytesReceived = await TcpConnection.Instance.ReceiveAsync(responseBytes, SocketFlags.None, _ctsRealTime.Token);
+                            if (bytesReceived == 0)
+                            {
+                                throw new Exception("Tcp connection had been close by server");
+                            }
+                            int charCount = Encoding.ASCII.GetChars(responseBytes, 0, bytesReceived, responseChars, 0);
+                            string dataReceived = new string(responseChars, 0, charCount);
+                            string dataText = $"[{dataReceived}]";
+                            List<Carla>? carlaTelemetry = JsonConvert.DeserializeObject<List<Carla>>(dataText);
+                            if (carlaTelemetry == null)
+                            {
+                                throw new Exception("Wrong data format");
+                            }
+                            foreach (Carla carla in carlaTelemetry)
+                            {
+                                string cmd = MCode.Move_Cartesian(MCode.modeMoveCartesian.STATIC, Int32.Parse(carla.position[0]),
+                                    Int32.Parse(carla.position[1]), Int32.Parse(carla.position[2]), Int32.Parse(carla.orientation[0]),
+                                    Int32.Parse(carla.orientation[1]), Int32.Parse(carla.orientation[2]));
+                                SerialConnection.Instance.WriteLine(cmd);
+                            }
+                        }
+                    }, _ctsRealTime.Token);
+                    await Task.WhenAll(TaskRealTime);
+                }
+                else
+                {
+                    BtnRealtimeContent = "Start Realtime";
+                    _ctsRealTime.Cancel();
+                }
+            }
+            catch(Exception ex)
+            {
+                if(!TaskRealTime.IsCanceled)
+                {
+                    _ctsRealTime.Cancel();
+                }
+                if(ex.Message == "Tcp connection had been close by server")
+                {
+                    TcpConnection.Instance.Close();
+                    TcpConnection.Instance = null;
+
+                    IsCarlaConnect = false;
+                    BtnCarlaContent = "Connect";
+                    IsBtnCarlaAvail = true;
+                }
+
+                ErrorWindow errorWindow = new ErrorWindow();
+                var errorVm = errorWindow.DataContext as ErrorViewModel;
+                errorVm.ErrorData = ex.Message;
+
+                if (ex.Source == "Newtonsoft.Json")
+                {
+                    errorVm.ErrorData = "Wrong data format";
+                }
+                UnlockWindow();
+                BtnRealtimeContent = "Start Realtime";
+                _ctsRealTime.Dispose();
+                
+                errorWindow.ShowDialog();
+            }
+        }
 
         private void RecordWindowExecuted(object data)
         {
@@ -310,29 +347,6 @@ namespace CkasTool_MVVM.ViewModels
             }
         }
 
-        private void ResetWindow()
-        {
-            PortCkasList = SerialPort.GetPortNames();
-            if (PortCkasList.Count() > 0)
-            {
-                PortCkasSelected = PortCkasList.First();
-            }
-            CarlaIp = "127.0.0.1:5000";
-            IsBtnCkasAvail = true;
-            IsBtnCarlaAvail = true;
-            BtnCkasContent = "Connect";
-            BtnCarlaContent = "Connect";
-            BtnRealtimeContent = "Start Realtime";
-            IsCkasConnect = false;
-            IsCarlaConnect = false;
-
-            SerialConnection.Instance.Close();
-            SerialConnection.Instance = null;
-
-            TcpConnection.Instance.Close();
-            TcpConnection.Instance = null;
-        }
-
         private void TcpErrorHandler(object data)
         {
             //MessageBox.Show("Tcp Error Handler");
@@ -349,6 +363,28 @@ namespace CkasTool_MVVM.ViewModels
             errorVm.ErrorData = message;
             errorWindow.ShowDialog();
         }
-        
+
+        private void BlockWindow()
+        {
+            IsBtnCkasAvail = false;
+            IsBtnCarlaAvail = false;
+            IsBtnRecordAvail = false;
+            isBtnRefreshAvail = false;
+            IsPortCkasAvail = false;
+            IsBtnReplayAvail = false;
+            IsBtnJoggingAvail = false;
+        }
+
+        private void UnlockWindow()
+        {
+            IsBtnCkasAvail = true;
+            IsBtnCarlaAvail = true;
+            IsBtnRecordAvail = true;
+            isBtnRefreshAvail = true;
+            IsPortCkasAvail = true;
+            IsBtnReplayAvail = true;
+            IsBtnJoggingAvail = true;
+        }
+
     }
 }

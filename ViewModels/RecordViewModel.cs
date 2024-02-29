@@ -27,8 +27,8 @@ namespace CkasTool_MVVM.ViewModels
         public string TextRecord { get => _textRecord; set { _textRecord = value; OnPropertyChanged(); } }
 
 
-        private List<string> _textRecordToSave;
-        public List<string> TextRecordToSave { get => _textRecordToSave; set { _textRecordToSave = value; OnPropertyChanged(); } }
+        private string _textRecordToSave;
+        public string TextRecordToSave { get => _textRecordToSave; set { _textRecordToSave = value; OnPropertyChanged(); } }
 
         public RelayCommand StartRecordCommand { get; set; }
         public RelayCommand ClosingCommand { get; set; }
@@ -45,13 +45,18 @@ namespace CkasTool_MVVM.ViewModels
         {
             BtnRecordContent = "Start Record";
             TextRecord = String.Empty;
-            TextRecordToSave = new List<string>();
+            TextRecordToSave = String.Empty;
+
+            _cts = new CancellationTokenSource();
 
             StartRecordCommand = new RelayCommand(data => StartRecordExecuted(data), data => true);
             ClosingCommand = new RelayCommand(data => ClosingExecuted(data), data => true);
 
             TimeStamp = 0;
-            BackgroundTcp();
+            if (TcpConnection.Instance.Connected)
+            {
+                BackgroundTcp();
+            }
         }
 
         private async void StartRecordExecuted (object data)
@@ -97,8 +102,8 @@ namespace CkasTool_MVVM.ViewModels
                         }
                         int charCount = Encoding.ASCII.GetChars(responseBytes, 0, bytesReceived, responseChars, 0);
                         string dataReceived = new string(responseChars, 0, charCount);
-                        dataReceived = $"[{dataReceived}]";
-                        List<Carla> carlaTelemetry = JsonConvert.DeserializeObject<List<Carla>>(dataReceived);
+                        string dataText = $"[{dataReceived}]";
+                        List<Carla> carlaTelemetry = JsonConvert.DeserializeObject<List<Carla>>(dataText);
                         if (carlaTelemetry == null)
                         {
                             throw new Exception("Wrong data format");
@@ -116,10 +121,7 @@ namespace CkasTool_MVVM.ViewModels
                                 $"{carla.angular_velocity[2]} **Position: {carla.position[0]} {carla.position[1]} {carla.position[2]} " +
                                 $"**Orientation: {carla.orientation[0]} {carla.orientation[1]} {carla.orientation[2]} **Velocity: {carla.velocity}" + Environment.NewLine;
 
-                                TextRecordToSave.Add($"{stampWrite} {carla.linear_acceleration[0]} {carla.linear_acceleration[1]} " +
-                                $"{carla.linear_acceleration[2]} {carla.angular_velocity[0]} {carla.angular_velocity[1]} " +
-                                $"{carla.angular_velocity[2]} {carla.position[0]} {carla.position[1]} {carla.position[2]} " +
-                                $"{carla.orientation[0]} {carla.orientation[1]} {carla.orientation[2]} {carla.velocity}");
+                                TextRecordToSave += dataReceived;
                                 i++;
                             }
                         }
@@ -148,21 +150,17 @@ namespace CkasTool_MVVM.ViewModels
             if (!string.IsNullOrEmpty(TextRecord))
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "Text file (*.txt)|*.txt|C# file (*.cs)|*.cs";
+                saveFileDialog.Filter = "Text file (*.txt)|*.txt|C# file (*.cs)|*.cs|Json file (*.json)|*.json";
                 saveFileDialog.Title = "Save Record File";
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName, append: true))
+                    using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
                     {
-                        foreach (string item in TextRecordToSave)
-                        {
-                            writer.WriteLine(item);
-                        }
-                        writer.Flush();
+                        writer.Write($"[{TextRecordToSave}]");
                     }
                 }
             }
-            TextRecordToSave.Clear();
+            TextRecordToSave = String.Empty;
             TextRecord = String.Empty;
         }
     }

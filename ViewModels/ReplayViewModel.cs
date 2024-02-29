@@ -58,7 +58,8 @@ namespace CkasTool_MVVM.ViewModels
             DataToReplay = new List<int[]>();
             IsBtnSelectAvail = true;
             IsTxtSelectAvail = true;
-            IsTxtContentAvail = true;
+            IsBtnStartAvail = false;
+            IsTxtContentAvail = false;
 
             StartReplayCommand = new RelayCommand(data => StartReplayExecuted(data), data => IsBtnStartAvail);
             SelectFileCommand = new RelayCommand(data => SelectFileExecuted(data), data => IsBtnSelectAvail);
@@ -92,7 +93,6 @@ namespace CkasTool_MVVM.ViewModels
                 else
                 {
                     BtnReplayContent = "Start Replay";
-                    EnableElement();
                     _ctsReplay.Cancel();
                 }
             }
@@ -106,6 +106,7 @@ namespace CkasTool_MVVM.ViewModels
                 var errorVm = errorWindow.DataContext as ErrorViewModel;
                 errorVm.ErrorData = ex.Message;
                 errorWindow.ShowDialog();
+
             }
         }
 
@@ -151,9 +152,12 @@ namespace CkasTool_MVVM.ViewModels
             }
             catch (Exception ex)
             {
+                EnableElement();
+                IsBtnStartAvail = true;
                 ContentFileSelected = string.Empty;
+                IsBtnStartAvail = false;
                 DataToReplay.Clear();
-
+                ContentFileSelected = String.Empty;
                 ErrorWindow errorWindow = new ErrorWindow();
                 var errorVm = errorWindow.DataContext as ErrorViewModel;
                 errorVm.ErrorData = ex.Message;
@@ -165,14 +169,12 @@ namespace CkasTool_MVVM.ViewModels
         {
             IsBtnSelectAvail = false;
             IsTxtSelectAvail = false;
-            IsTxtContentAvail = false;
         }
 
         private void EnableElement()
         {
             IsBtnSelectAvail = true;
             IsTxtSelectAvail = true;
-            IsTxtContentAvail = true;
         }
 
         private void HandleSendDataSuccess()
@@ -192,7 +194,7 @@ namespace CkasTool_MVVM.ViewModels
 
         private void ClosingExecuted(object data)
         {
-            if(!TaskSendData.IsCanceled)
+            if(TaskSendData != null && !TaskSendData.IsCanceled)
             {
                 _ctsReplay.Cancel();
             }
