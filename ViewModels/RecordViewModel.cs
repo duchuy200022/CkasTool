@@ -47,8 +47,6 @@ namespace CkasTool_MVVM.ViewModels
             TextRecord = String.Empty;
             TextRecordToSave = String.Empty;
 
-            _cts = new CancellationTokenSource();
-
             StartRecordCommand = new RelayCommand(data => StartRecordExecuted(data), data => true);
             ClosingCommand = new RelayCommand(data => ClosingExecuted(data), data => true);
 

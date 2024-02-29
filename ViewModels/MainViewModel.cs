@@ -281,6 +281,21 @@ namespace CkasTool_MVVM.ViewModels
                 {
                     BtnRealtimeContent = "Start Realtime";
                     _ctsRealTime.Cancel();
+
+                    //reconnect TCP
+                    IsBtnCarlaAvail = false;
+                    TcpConnection.Instance.Close();
+                    TcpConnection.Instance = null;
+
+                    string[] address = CarlaIp.Split(':');
+                    TcpConnection.Instance.Connect(address[0], Int32.Parse(address[1]));
+                    if (TcpConnection.Instance.Connected)
+                    {
+                        BtnCarlaContent = "Disconnect";
+                        IsCarlaConnect = true;
+                        IsBtnRecordAvail = true;
+                        IsBtnCarlaAvail = true;
+                    }
                 }
             }
             catch(Exception ex)
@@ -350,6 +365,8 @@ namespace CkasTool_MVVM.ViewModels
         private void TcpErrorHandler(object data)
         {
             //MessageBox.Show("Tcp Error Handler");
+            string message = data as string;
+
             TcpConnection.Instance.Close();
             TcpConnection.Instance = null;
 
@@ -357,9 +374,22 @@ namespace CkasTool_MVVM.ViewModels
             BtnCarlaContent = "Connect";
             IsBtnCarlaAvail = true;
 
+            if(message != "Tcp connection had been close by server")
+            {
+                string[] address = CarlaIp.Split(':');
+                TcpConnection.Instance.Connect(address[0], Int32.Parse(address[1]));
+                if (TcpConnection.Instance.Connected)
+                {
+                    BtnCarlaContent = "Disconnect";
+                    IsCarlaConnect = true;
+                    IsBtnRecordAvail = true;
+                    IsBtnCarlaAvail = true;
+                }
+            }
+
             ErrorWindow errorWindow = new ErrorWindow();
             var errorVm = errorWindow.DataContext as ErrorViewModel;
-            string message = data as string;
+            
             errorVm.ErrorData = message;
             errorWindow.ShowDialog();
         }
