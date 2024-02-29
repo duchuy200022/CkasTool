@@ -10,5 +10,9 @@ namespace CkasTool_MVVM.ViewModels
     {
         private string _errorData;
         public string ErrorData { get { return _errorData; } set { _errorData = value; OnPropertyChanged(); } }
+
+        private string _title = "Error";
+        public string Title { get { return _title; } set { _title = value; OnPropertyChanged(); } }
+
     }
 }

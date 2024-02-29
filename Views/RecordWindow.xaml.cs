@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CkasTool_MVVM.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,10 @@ namespace CkasTool_MVVM.Views
         public RecordWindow()
         {
             InitializeComponent();
+            RecordViewModel viewModel = new RecordViewModel();
+            this.DataContext = viewModel;
+            if (viewModel.CloseAction == null)
+                viewModel.CloseAction = new Action(this.Close);
         }
     }
 }

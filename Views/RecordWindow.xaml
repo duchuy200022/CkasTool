@@ -6,16 +6,15 @@
         xmlns:local="clr-namespace:CkasTool_MVVM.Views"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        DataContext="{StaticResource RecordVM}"
+        
         Title="RecordWindow" Height="450" Width="800">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding ClosingCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
+    
     <Grid>
-        
-        
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="6*"/>
@@ -24,9 +23,9 @@
             <Button Command="{Binding StartRecordCommand}" 
                     Content="{Binding BtnRecordContent}" 
                     HorizontalAlignment="Center" VerticalAlignment="Center" 
-                    Width="60" Height="50"/>
+                    Width="100" Height="50"/>
         </Grid>
-        <TextBox Grid.Row="1" IsReadOnly="True" Text="{Binding TextRecord}">
+        <TextBox Grid.Row="1" IsReadOnly="True" Text="{Binding TextRecord}" Margin="5,5,5,5">
             
         </TextBox>
     </Grid>

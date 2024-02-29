@@ -51,7 +51,7 @@
                     IsEnabled="True"
                     Width="100" Height="30" Margin="50,0,0,0"/>
             <Button IsEnabled="{Binding IsCarlaConnect}" Command="{Binding RecordWindowCommand}" Content="Record" Width="100" Height="30" Margin="50,0,0,0"/>
-            <Button IsEnabled="{Binding IsCkasConnect}"  Content="Replay" Width="100" Height="30" Margin="50,0,0,0"/>
+            <Button IsEnabled="{Binding IsCkasConnect}" Command="{Binding ReplayWindowCommand}" Content="Replay" Width="100" Height="30" Margin="50,0,0,0"/>
         </WrapPanel>
     </Grid>
 </Window>

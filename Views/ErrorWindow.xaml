@@ -6,9 +6,11 @@
         xmlns:local="clr-namespace:CkasTool_MVVM.Views"
         mc:Ignorable="d"
         DataContext="{StaticResource ErrorVM}"
-        Title="ErrorWindow" Height="200" Width="400">
+        Title="{Binding Title}" Height="120" Width="400">
     <Grid>
-        <TextBlock Text="{Binding ErrorData}" 
-                   Height="200" Width="400"/>
+        <TextBlock Text="{Binding ErrorData}"
+                   Height="100" Width="400"
+                   TextAlignment="Center"
+                   TextWrapping="Wrap"/>
     </Grid>
 </Window>
