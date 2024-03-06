@@ -113,11 +113,13 @@ namespace CkasTool_MVVM.ViewModels
                                 int stampWrite = Int32.Parse(carla.stamp) - TimeStamp;
                                 TimeStamp = Int32.Parse(carla.stamp);
 
-                                TextRecord += $"Message {i} =>> Time: {carla.stamp} **Linear Acceleration: {carla.linear_acceleration[0]} " +
-                                $"{carla.linear_acceleration[1]} " +
-                                $"{carla.linear_acceleration[2]} **Angular Velocity: {carla.angular_velocity[0]} {carla.angular_velocity[1]} " +
-                                $"{carla.angular_velocity[2]} **Position: {carla.position[0]} {carla.position[1]} {carla.position[2]} " +
-                                $"**Orientation: {carla.orientation[0]} {carla.orientation[1]} {carla.orientation[2]} **Velocity: {carla.velocity}" + Environment.NewLine;
+                                TextRecord += $" =>>Message{i} **Time: {carla.stamp} **Linear Acceleration: {carla.linear_acceleration_x} " +
+                                $"{carla.linear_acceleration_y} " +
+                                $"{carla.linear_acceleration_z} " +
+                                $"**Angular Velocity: {carla.angular_velocity_x} {carla.angular_velocity_y} " +
+                                $"{carla.angular_velocity_z}" +
+                                $"**Orientation: {carla.orientation_roll} {carla.orientation_pitch} {carla.orientation_yaw} " +
+                                Environment.NewLine;
 
                                 TextRecordToSave += dataReceived;
                                 i++;

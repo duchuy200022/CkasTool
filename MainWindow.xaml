@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CkasTool_MVVM"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="CkasTool"
         DataContext="{StaticResource MainVN}"
         Height="300" Width="800">
     <Grid>

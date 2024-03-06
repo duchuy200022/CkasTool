@@ -16,9 +16,11 @@ namespace CkasTool_MVVM.CkasCommand
             MIXED
         };
 
-        public static string Move_Cartesian(modeMoveCartesian mode, int mx = 0, int my = 0, int mz = 0, int mroll = 0, int mpitch = 0,
-            int myaw = 0, float m_axi = 0, float m_ayi = 0, float m_azi = 0, float m_axg = 0, float m_ayg = 0, float m_azg = (float)9.81,
-            float m_wz = 0, float m_wy = 0, float m_wx = 0)
+        public static string Move_Cartesian(modeMoveCartesian mode, int mx = 0, int my = 0, 
+            int mz = 0, string mroll = "0", string mpitch = "0",
+            string myaw = "0", string m_axi = "0", string m_ayi = "0", 
+            string m_azi = "0", string m_axg = "0", string m_ayg = "0", string m_azg = "9.81",
+            string m_wz = "0", string m_wy = "0", string m_wx = "0")
         {
             string s;
 
@@ -30,9 +32,9 @@ namespace CkasTool_MVVM.CkasCommand
                     break;
 
                 case (modeMoveCartesian.DYNAMIC):
-                    s = "~M 0 0 0 0 0 0 " + m_axi.ToString() + " " + m_ayi.ToString() + " " + m_azi.ToString() + " " +
-                        m_axg.ToString() + " " + m_ayg.ToString() + " " + m_azg.ToString() + " " +
-                        m_wz.ToString() + " " + m_wy.ToString() + " " + m_wx.ToString();
+                    s = "~M 0 0 0 0 0 0 " + m_axi + " " + m_ayi + " " + m_azi + " " +
+                        m_axg + " " + m_ayg + " " + m_azg + " " +
+                        m_wz + " " + m_wy + " " + m_wx;
                     break;
 
                 case (modeMoveCartesian.MIXED):

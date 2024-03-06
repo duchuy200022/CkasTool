@@ -153,6 +153,12 @@ namespace CkasTool_MVVM.ViewModels
                 var errorVm = errorWindow.DataContext as ErrorViewModel;
                 errorVm.ErrorData = ex.Message;
                 errorWindow.ShowDialog();
+                IsBtnReplayAvail = false;
+                IsBtnJoggingAvail = false;
+                SerialConnection.Instance.Close();
+                BtnCkasContent = "Connect";
+                IsCkasConnect = false;
+                IsBtnCkasAvail = true;
             }
         }
         private void ConnectCarlaExecuted(object data)
@@ -268,9 +274,10 @@ namespace CkasTool_MVVM.ViewModels
                             }
                             foreach (Carla carla in carlaTelemetry)
                             {
-                                string cmd = MCode.Move_Cartesian(MCode.modeMoveCartesian.STATIC, Int32.Parse(carla.position[0]),
-                                    Int32.Parse(carla.position[1]), Int32.Parse(carla.position[2]), Int32.Parse(carla.orientation[0]),
-                                    Int32.Parse(carla.orientation[1]), Int32.Parse(carla.orientation[2]));
+                                string cmd = MCode.Move_Cartesian(MCode.modeMoveCartesian.DYNAMIC, m_axi: carla.linear_acceleration_x,
+                                    m_ayi: carla.linear_acceleration_y, m_azi: carla.linear_acceleration_z,
+                                    m_wx: carla.angular_velocity_x, m_wy: carla.angular_velocity_y, m_wz: carla.angular_velocity_z,
+                                    mroll: carla.orientation_roll, mpitch: carla.orientation_pitch, myaw: carla.orientation_yaw);
                                 SerialConnection.Instance.WriteLine(cmd);
                             }
                         }

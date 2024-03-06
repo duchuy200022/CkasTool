@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,8 +42,8 @@ namespace CkasTool_MVVM.ViewModels
         private bool _isTxtSelectAvail;
         public bool IsTxtSelectAvail { get => _isTxtSelectAvail; set { _isTxtSelectAvail = value; OnPropertyChanged(); } }
 
-        private List<int[]> _dataToReplay;
-        public List<int[]> DataToReplay { get => _dataToReplay; set { _dataToReplay = value; OnPropertyChanged(); } }
+        private List<string[]> _dataToReplay;
+        public List<string[]> DataToReplay { get => _dataToReplay; set { _dataToReplay = value; OnPropertyChanged(); } }
 
         public Task TaskSendData;
         public CancellationTokenSource _ctsReplay;
@@ -55,7 +56,7 @@ namespace CkasTool_MVVM.ViewModels
         public ReplayViewModel()
         {
             BtnReplayContent = "Start Replay";
-            DataToReplay = new List<int[]>();
+            DataToReplay = new List<string[]>();
             IsBtnSelectAvail = true;
             IsTxtSelectAvail = true;
             IsBtnStartAvail = false;
@@ -81,8 +82,10 @@ namespace CkasTool_MVVM.ViewModels
                     {
                         foreach (var item in DataToReplay)
                         {
-                            string cmd = MCode.Move_Cartesian(MCode.modeMoveCartesian.STATIC, item[1], item[2], item[3], item[4], item[5], item[6]);
-                            await Task.Delay(item[0], _ctsReplay.Token);
+                            string cmd = MCode.Move_Cartesian(MCode.modeMoveCartesian.DYNAMIC, mroll: item[7], mpitch: item[8],
+                                myaw: item[9], m_axi: item[1], m_ayi: item[2], m_azi: item[3], m_wx: item[4],
+                                m_wy: item[5], m_wz: item[6]);
+                            await Task.Delay(Int32.Parse(item[0]), _ctsReplay.Token);
                             SerialConnection.Instance.WriteLine(cmd);
                         }
                         HandleSendDataSuccess();
@@ -130,21 +133,44 @@ namespace CkasTool_MVVM.ViewModels
                     {
                         throw new Exception("Wrong data format");
                     }
-                    int timeStamp = 0;
+                    decimal timeStamp = 0;
+                    int i = 0;
                     foreach(Carla carla in carlaTelemetry)
                     {
-                        ContentFileSelected += $"=>> Time: {carla.stamp} **Linear Acceleration: {carla.linear_acceleration[0]} " +
-                                $"{carla.linear_acceleration[1]} " +
-                                $"{carla.linear_acceleration[2]} **Angular Velocity: {carla.angular_velocity[0]} {carla.angular_velocity[1]} " +
-                                $"{carla.angular_velocity[2]} **Position: {carla.position[0]} {carla.position[1]} {carla.position[2]} " +
-                                $"**Orientation: {carla.orientation[0]} {carla.orientation[1]} {carla.orientation[2]} **Velocity: {carla.velocity}" + Environment.NewLine;
+                        ContentFileSelected += $"=>> Time: {carla.stamp} **Linear Acceleration: {carla.linear_acceleration_x} " +
+                                $"{carla.linear_acceleration_y} " +
+                                $"{carla.linear_acceleration_z} " +
+                                $"**Angular Velocity: {carla.angular_velocity_x} {carla.angular_velocity_y} " +
+                                $"{carla.angular_velocity_z}" +
+                                $"**Orientation: {carla.orientation_roll} {carla.orientation_pitch} {carla.orientation_yaw} " +
+                                Environment.NewLine;
 
                         //Add Data to replay
-                        int stampWrite = Int32.Parse(carla.stamp) - timeStamp;
-                        timeStamp = Int32.Parse(carla.stamp);
-                        int[] data1 = new int[] { stampWrite,Int32.Parse(carla.position[0]), Int32.Parse(carla.position[1]), Int32.Parse(carla.position[2]),
-                        Int32.Parse(carla.orientation[0]), Int32.Parse(carla.orientation[1]), Int32.Parse(carla.orientation[2])};
+                        decimal stampWrite = Decimal.Ceiling(decimal.Parse(carla.stamp, NumberStyles.Float)/1000 - timeStamp);
+                        
+
+                        if(i == 0)
+                        {
+                            stampWrite = 0;
+                        }
+                        timeStamp = decimal.Parse(carla.stamp, NumberStyles.Float) / 1000;
+
+                        decimal angular_velocity_z = decimal.Parse(carla.angular_velocity_z, NumberStyles.Float);
+                        decimal angular_velocity_x = decimal.Parse(carla.angular_velocity_x, NumberStyles.Float);
+                        decimal angular_velocity_y = decimal.Parse(carla.angular_velocity_y, NumberStyles.Float);
+                        decimal linear_acceleration_x = decimal.Parse(carla.linear_acceleration_x, NumberStyles.Float);
+                        decimal linear_acceleration_y = decimal.Parse(carla.linear_acceleration_y, NumberStyles.Float);
+                        decimal linear_acceleration_z = decimal.Parse(carla.linear_acceleration_z, NumberStyles.Float);
+                        decimal orientation_roll = decimal.Parse(carla.orientation_roll, NumberStyles.Float);
+                        decimal orientation_pitch = decimal.Parse(carla.orientation_pitch, NumberStyles.Float);
+                        decimal orientation_yaw = decimal.Parse(carla.orientation_yaw, NumberStyles.Float);
+
+                        string[] data1 = new string[] { stampWrite.ToString(),linear_acceleration_x.ToString(),
+                            linear_acceleration_y.ToString(), linear_acceleration_z.ToString(),
+                        angular_velocity_x.ToString(), angular_velocity_y.ToString(), angular_velocity_z.ToString(), 
+                            orientation_roll.ToString(),orientation_pitch.ToString(), orientation_yaw.ToString()};
                         DataToReplay.Add(data1);
+                        i++;
                     }
                 }
                 EnableElement();

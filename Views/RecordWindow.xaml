@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:CkasTool_MVVM.Views"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        
-        Title="RecordWindow" Height="450" Width="800">
+        Title="Record" Height="450" Width="800">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding ClosingCommand}" />

@@ -48,7 +48,7 @@ namespace CkasTool_MVVM.ViewModels
         {
             try
             {
-                string cmd = MCode.Move_Cartesian(MCode.modeMoveCartesian.STATIC, XValue, YValue, ZValue, RollValue, PitchValue, YawValue);
+                string cmd = MCode.Move_Cartesian(MCode.modeMoveCartesian.STATIC, XValue, YValue, ZValue, RollValue.ToString(), PitchValue.ToString(), YawValue.ToString());
                 SerialConnection.Instance.WriteLine(cmd);
             }
             catch (Exception ex)

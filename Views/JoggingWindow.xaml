@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:CkasTool_MVVM.Views" 
         mc:Ignorable="d"
         DataContext="{StaticResource JoggingVM}"
-        
-        Title="JoggingWindow" Height="450" Width="550">
+        Title="Jogging" Height="450" Width="550">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
